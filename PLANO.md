@@ -1,4 +1,4 @@
-# Ray Tracer CPU — Plano de Desenvolvimento
+%# Ray Tracer CPU — Plano de Desenvolvimento
 
 ## Objetivo
 
