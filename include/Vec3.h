@@ -2,11 +2,12 @@
 
 class Vec3 {
 public:
-    float x, y, z;
+    double x, y, z;
 
     Vec3(): x(0), y(0), z(0) {}
+    Vec3(double x, double y, double z): x(x), y(y), z(z) {}
 
-    void set(float x, float y, float z) {
+    void set(double x, double y, double z) {
         this->x = x;
         this->y = y;
         this->z = z;
@@ -17,14 +18,6 @@ public:
         result.x = this->x + other.x;
         result.y = this->y + other.y;
         result.z = this->z + other.z;
-        return result;
-    }
-
-    Vec3 operator-(const Vec3& other) const {
-        Vec3 result;
-        result.x = this->x - other.x;
-        result.y = this->y - other.y;
-        result.z = this->z - other.z;
         return result;
     }
 
