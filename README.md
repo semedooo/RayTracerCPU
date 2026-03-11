@@ -158,5 +158,5 @@ See [`PLANO.md`](PLANO.md) for the full step-by-step development plan, including
 
 ## Author
 
-**Gonçalo Semedo** — Computer Science student  
+**Manuel Semedo** — Computer Science student  
 Built as a hands-on study of computer graphics, from scratch.
