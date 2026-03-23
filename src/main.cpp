@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <vector>
 #include "Image.h"
+#include "Vec3.h"
+#include "Camera.h"
 
 using namespace std;
 
@@ -22,6 +24,26 @@ Vec3 readVec(const string& prompt) {
     return Vec3(x, y, z);
 }
 
+Camera readCameraParameters() {
+    float width, height, focal_length;
+    cout << "Enter viewport width: ";
+    cin >> width;
+    cout << "Enter viewport height: ";
+    cin >> height;
+    cout << "Enter focal length: ";
+    cin >> focal_length;
+
+    return Camera(P3(0, 0, 0), width, height, focal_length);
+}
+
+Vec3 rayColor(const Ray& r) {
+    Vec3 unit_direction = r.direction.normalized();
+    float t = 0.5f * (unit_direction.y + 1.0f);
+    Vec3 color = (1.0f - t) * Vec3(1.0f, 1.0f, 1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
+    return color;
+}
+
+
 void printMenu() {
     cout << "=== Ray Tracer CPU - Tests ===" << endl;
     cout << "1. Sum (+)" << endl;
@@ -33,6 +55,7 @@ void printMenu() {
     cout << "7. Length (length)" << endl;
     cout << "8. Normalize (normalized)" << endl;
     cout << "9. Generate test PPM image" << endl;
+    cout << "10. Ray Color (rayColor)" << endl;
     cout << "0. Exit" << endl;
     cout << "Operation: ";
 }
@@ -51,7 +74,7 @@ int main() {
         }
 
         switch (op) {
-            case 1: case 2: case 3: case 4: case 5: case 6: {
+            case 1: case 2: case 3: case 4: case 5: case 6:{
                 // Two vector operations
                 Vec3 a = readVec("Vector A (x y z): ");
                 Vec3 b = readVec("Vector B (x y z): ");
@@ -94,6 +117,25 @@ int main() {
 
                 save_ppm("output/test.ppm", width, height, pixels);
                 cout << "Image saved to output/test.ppm" << endl;
+                break;
+            }
+            case 10: {
+
+                Camera camera = readCameraParameters();
+                vector<Vec3> pixels(camera.viewport_width * camera.viewport_height);
+
+                for (int i = 0; i < camera.viewport_height; i++) {
+                    for (int j = 0; j < camera.viewport_width; j++) {
+                        float u = float(j) / (camera.viewport_width - 1);
+                        float v = float(i) / (camera.viewport_height - 1);
+
+                        Ray ray = camera.getRay(u, v);
+                        Vec3 color = rayColor(ray);
+                        pixels[i * camera.viewport_width + j] = color;
+                    }
+                }
+                save_ppm("output/raytracer.ppm", camera.viewport_width, camera.viewport_height, pixels);
+                cout << "Image saved to output/raytracer.ppm" << endl;
                 break;
             }
             case 0:

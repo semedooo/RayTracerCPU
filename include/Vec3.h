@@ -1,6 +1,9 @@
+#ifndef VEC3_H
+#define VEC3_H
+
 #include <cmath>
 
-class Vec3 {
+class  Vec3 {
 public:
     double x, y, z;
 
@@ -34,6 +37,14 @@ public:
         result.x = this->x * other.x;
         result.y = this->y * other.y;
         result.z = this->z * other.z;
+        return result;
+    }
+
+    Vec3 operator*(double scalar) const {
+        Vec3 result;
+        result.x = this->x * scalar;
+        result.y = this->y * scalar;
+        result.z = this->z * scalar;
         return result;
     }
 
@@ -84,3 +95,9 @@ public:
 
 
 };
+
+inline Vec3 operator*(double t, const Vec3& v) {
+    return v * t;
+}
+
+#endif // VEC3_H

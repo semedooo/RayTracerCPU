@@ -1,4 +1,8 @@
 
+// Proteção contra inclusão múltipla
+#ifndef POINT_H
+#define POINT_H
+
 class P3 {
 public:
     double x, y, z;
@@ -9,3 +13,5 @@ public:
     double getZ() const { return z; }
 
 };
+
+#endif // POINT_H
