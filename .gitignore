@@ -1,0 +1,15 @@
+# Build artifacts
+obj/
+*.o
+*.obj
+*.exe
+
+# Render outputs (keep folder, ignore generated images)
+output/*.ppm
+!output/.gitkeep
+
+# VS Code local settings
+.vscode/
+
+# Private/local planning notes
+PLANO.md
