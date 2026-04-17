@@ -69,20 +69,22 @@ Vec3 sphereRayColor(const Ray& r, const Sphere& sphere) {
 
 
 void printMenu() {
-    cout << "=== Ray Tracer CPU - Tests ===" << endl;
-    cout << "1. Sum (+)" << endl;
-    cout << "2. Subtraction (-)" << endl;
-    cout << "3. Multiplication (*)" << endl;
-    cout << "4. Division (/)" << endl;
-    cout << "5. Dot Product (dot)" << endl;
-    cout << "6. Cross Product (cross)" << endl;
-    cout << "7. Length (length)" << endl;
-    cout << "8. Normalize (normalized)" << endl;
-    cout << "9. Generate test PPM image" << endl;
-    cout << "10. Ray Color (rayColor)" << endl;
-    cout << "11. Sphere" << endl;
+    cout << "=== RayTracerCPU - Interactive Tests ===" << endl;
+    cout << "-- Vec3 Operations --" << endl;
+    cout << "1. Vector Add (+)" << endl;
+    cout << "2. Vector Subtract (-)" << endl;
+    cout << "3. Vector Multiply (component-wise)" << endl;
+    cout << "4. Vector Divide (component-wise)" << endl;
+    cout << "5. Dot Product" << endl;
+    cout << "6. Cross Product" << endl;
+    cout << "7. Vector Length" << endl;
+    cout << "8. Normalize Vector" << endl;
+    cout << "-- Rendering --" << endl;
+    cout << "9. Render Gradient Test (PPM)" << endl;
+    cout << "10. Render Sky Color From Camera Rays" << endl;
+    cout << "11. Render Sphere Intersection Test" << endl;
     cout << "0. Exit" << endl;
-    cout << "Operation: ";
+    cout << "Choose option: ";
 }
 
 int main() {

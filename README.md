@@ -1,166 +1,102 @@
-# 🔦 RayTracerCPU
+# RayTracerCPU
 
-A CPU-based ray tracer built from scratch in modern C++, with zero external dependencies.  
-This is a personal learning project focused on understanding the mathematics and physics behind computer graphics rendering.
+CPU ray tracer built from scratch in modern C++17, with no external runtime dependencies.
 
----
+The project is focused on learning and clarity: each rendering concept is implemented incrementally, from vector math to geometric intersection and shading.
 
-## About
+## Current Scope
 
-Ray tracing is one of the most elegant algorithms in computer graphics — it simulates how light travels by casting rays from a virtual camera into a 3D scene and computing the color of each pixel based on what those rays hit.
-
-This project implements a ray tracer **step by step**, starting from first principles:
-
-- 🧮 **Linear algebra** — 3D vectors, dot/cross products, normalization
-- 📐 **Geometric intersections** — ray–sphere, ray–plane equations
-- 💡 **Phong lighting model** — ambient, diffuse, and specular components
-- 🌑 **Shadows** — shadow ray casting with epsilon bias
-- 🪞 **Reflections** — recursive ray tracing with depth limiting
-- 🖼️ **PPM image output** — zero-dependency image format, readable by any viewer
-
-The goal is to deeply understand the rendering pipeline by writing every piece of it by hand, in C++, without relying on graphics libraries.
-
----
-
-## Features
-
-| Feature | Status |
+| Component | Status |
 |---|---|
-| `Vec3` class — operators, dot, cross, length, normalize | ✅ Done |
-| `Ray` class — `P(t) = origin + t·direction` | ✅ Done |
-| `Image` — PPM output (`P3` format) | ✅ Done |
-| Gradient sky render | ✅ Done |
-| Interactive Vec3 test menu | ✅ Done |
-| `Camera` — viewport and ray generation per pixel | ✅ Done |
-| `Sphere` — ray–sphere intersection + normal shading | ✅ Done |
-| `Hittable` / `HittableList` — polymorphic scene objects | 🚧 In progress |
-| Phong shading (`Light`, `Material`) | 📋 Planned |
-| Shadow rays | 📋 Planned |
-| Recursive reflections | 📋 Planned |
-| Multi-object scene composition | 📋 Planned |
+| `Vec3` math (`+`, `-`, `*`, `/`, `dot`, `cross`, `length`, `normalized`) | Complete |
+| `Ray` (`P(t) = origin + t * direction`) | Complete |
+| PPM image writer (`P3`) | Complete |
+| Camera viewport + per-pixel ray generation | Complete |
+| Sky gradient rendering | Complete |
+| Ray-sphere intersection | Complete |
+| Normal-based sphere shading | Complete |
+| Hittable abstraction / scene list | In progress |
+| Phong lighting, shadows, reflections | Planned |
 
----
+## Build And Run
 
-## Build & Run
-
-**Requirements:** `g++` with C++17 support (no other dependencies needed).
+Requirements: `g++` with C++17 support and `make`.
 
 ```bash
-# Clone the repository
 git clone https://github.com/semedooo/RayTracerCPU.git
 cd RayTracerCPU
-
-# Build
 make
-
-# Run
 make run
-# or
-./raytracer
 ```
 
-**Clean build artifacts:**
+Clean artifacts:
+
 ```bash
 make clean
 ```
 
----
+## Interactive Menu
 
-## Usage
+The executable starts an interactive test menu:
 
-The program starts an interactive menu for testing vector operations and rendering:
-
-```
-=== Ray Tracer CPU - Tests ===
-1. Sum (+)
-2. Subtraction (-)
-3. Multiplication (*)
-4. Division (/)
-5. Dot Product (dot)
-6. Cross Product (cross)
-7. Length (length)
-8. Normalize (normalized)
-9. Generate test PPM image
-10. Ray Color (rayColor)
-11. Sphere
+```text
+=== RayTracerCPU - Interactive Tests ===
+-- Vec3 Operations --
+1. Vector Add (+)
+2. Vector Subtract (-)
+3. Vector Multiply (component-wise)
+4. Vector Divide (component-wise)
+5. Dot Product
+6. Cross Product
+7. Vector Length
+8. Normalize Vector
+-- Rendering --
+9. Render Gradient Test (PPM)
+10. Render Sky Color From Camera Rays
+11. Render Sphere Intersection Test
 0. Exit
 ```
 
-Selecting **option 9** generates a gradient test image at `output/test.ppm`.
-Selecting **option 10** renders sky color per ray at `output/raytracer.ppm`.
-Selecting **option 11** renders a sphere intersection test with normal-based shading at `output/sphere.ppm`.
+Generated files:
+- Option `9` -> `output/test.ppm`
+- Option `10` -> `output/raytracer.ppm`
+- Option `11` -> `output/sphere.ppm`
 
----
+## Project Layout
 
-## Project Structure
-
-```
+```text
 RayTracerCPU/
-├── Makefile              # Build rules (g++, C++17)
+├── Makefile
 ├── README.md
-├── PLANO.md              # Development roadmap (Portuguese)
 ├── include/
-│   ├── Vec3.h            # ✅ 3D vector math
-│   ├── Point.h           # ✅ 3D point (P3)
-│   ├── Ray.h             # ✅ Ray: origin + t·direction
-│   ├── Image.h           # ✅ PPM image output
-│   ├── Camera.h          # ✅ Viewport & ray generation
-│   ├── Hittable.h        # 🚧 Abstract hittable interface
-│   ├── Sphere.h          # ✅ Sphere geometry and ray hit test
-│   ├── Light.h           # 📋 Point light source
-│   └── Material.h        # 📋 Phong material properties
+│   ├── Vec3.h
+│   ├── Ray.h
+│   ├── Image.h
+│   ├── Camera.h
+│   ├── Sphere.h
+│   ├── Hittable.h
+│   ├── Light.h
+│   └── Material.h
 ├── src/
-│   └── main.cpp          # Entry point & interactive test menu
+│   └── main.cpp
 └── output/
-    └── *.ppm             # Rendered images (generated at runtime)
+    └── *.ppm
 ```
 
----
+## Core Math Notes
 
-## Core Concepts
+- Ray equation: `P(t) = O + tD`, with `t >= 0`.
+- Sphere equation: `||P - C||^2 = r^2`.
+- Substituting ray into sphere yields a quadratic in `t`.
+- The discriminant determines hit/no-hit and entry/exit intersections.
 
-### Vec3 — 3D Vector Math
-All geometry lives in `Vec3`, a zero-overhead class implementing the full set of operations needed for ray tracing:
-- Component-wise `+`, `-`, `*`, `/`
-- **Dot product:** `a·b = ax·bx + ay·by + az·bz` (used in lighting and intersection tests)
-- **Cross product:** `a×b` (used for constructing coordinate frames)
-- **Normalization:** `v̂ = v / ‖v‖` (directions must always be unit vectors)
+## Tech Stack
 
-### Ray — Parametric Line
-A ray is defined as `P(t) = origin + t × direction`, where `t ≥ 0`.  
-For every pixel on screen, a ray is cast from the camera's origin through that pixel's viewport position.
-
-### Ray–Sphere Intersection
-Substituting the ray equation into the sphere equation yields a quadratic in `t`.  
-The discriminant `Δ = b² − 4ac` tells us:
-- `Δ < 0` → no intersection
-- `Δ = 0` → tangent (one point)
-- `Δ > 0` → two intersections (entry and exit)
-
-### Phong Lighting Model
-Each visible surface point is shaded using three components:
-- **Ambient** — constant base light (`Ia`)
-- **Diffuse** — `Id = kd · I · max(0, n̂ · l̂)` — brighter surfaces face the light (`kd` = diffuse reflectance, `I` = light intensity)
-- **Specular** — `(r̂ · v̂)^α` — mirror-like highlight based on shininess
-
----
-
-## Technologies
-
-- **Language:** C++17
-- **Build:** GNU Make + g++
-- **Image format:** PPM (P3 text format — zero dependencies)
-- **Dependencies:** none (standard library only)
-
----
-
-## Roadmap
-
-See [`PLANO.md`](PLANO.md) for the full step-by-step development plan, including theory notes for each stage.
-
----
+- Language: C++17
+- Build: GNU Make + g++
+- Image format: plain-text PPM (`P3`)
+- Dependencies: C++ standard library only
 
 ## Author
 
-**Manuel Semedo** — Computer Science student  
-Built as a hands-on study of computer graphics, from scratch.
+Manuel Semedo
