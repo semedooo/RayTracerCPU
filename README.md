@@ -74,14 +74,30 @@ RayTracerCPU/
 │   ├── Image.h
 │   ├── Camera.h
 │   ├── Sphere.h
+│   ├── InputUtils.h
+│   ├── Menu.h
+│   ├── VectorTests.h
+│   ├── RenderTests.h
 │   ├── Hittable.h
 │   ├── Light.h
 │   └── Material.h
 ├── src/
-│   └── main.cpp
+│   ├── main.cpp
+│   ├── InputUtils.cpp
+│   ├── Menu.cpp
+│   ├── VectorTests.cpp
+│   └── RenderTests.cpp
 └── output/
     └── *.ppm
 ```
+
+### Module Responsibilities
+
+- `main.cpp`: program loop and option dispatch.
+- `InputUtils`: shared terminal input/output helpers.
+- `Menu`: interactive menu rendering.
+- `VectorTests`: Vec3 operation handlers (options 1-8).
+- `RenderTests`: rendering handlers (options 9-11).
 
 ## Core Math Notes
 
