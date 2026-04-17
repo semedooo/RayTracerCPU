@@ -6,8 +6,9 @@
 #include <cmath>
 #include "Vec3.h"
 #include "Ray.h"
+#include "Hittable.h"
 
-class Sphere {
+class Sphere : public Hittable {
 public:
     Vec3 center;
     float radius;
@@ -24,7 +25,7 @@ public:
         return center;
     }
 
-    bool hit(const Ray& ray, float tmin, float tmax, Vec3& hit_point) const {
+    bool hit(const Ray& ray, float t_min, float t_max, Vec3& hit_point) const override {
         Vec3 oc = ray.origin - center;
         double a = ray.direction.dot(ray.direction);
         double half_b = oc.dot(ray.direction);
@@ -37,9 +38,9 @@ public:
 
         double sqrt_disc = std::sqrt(discriminant);
         double root = (-half_b - sqrt_disc) / a;
-        if (root < tmin || root > tmax) {
+        if (root < t_min || root > t_max) {
             root = (-half_b + sqrt_disc) / a;
-            if (root < tmin || root > tmax) {
+            if (root < t_min || root > t_max) {
                 return false;
             }
         }
