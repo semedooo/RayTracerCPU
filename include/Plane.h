@@ -1,6 +1,7 @@
 #ifndef PLANE_H
 #define PLANE_H
 
+#include <cmath>
 #include "Hittable.h"
 
 class Plane : public Hittable {

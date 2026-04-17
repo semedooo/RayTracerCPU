@@ -2,7 +2,7 @@
 
 CPU ray tracer built from scratch in modern C++17, with no external runtime dependencies.
 
-The project is focused on learning and clarity: each rendering concept is implemented incrementally, from vector math to geometric intersection and shading.
+The project is focused on clarity and incremental learning: each rendering concept is implemented step by step, from vector math to geometric intersection and shading.
 
 ## Current Scope
 
@@ -15,7 +15,10 @@ The project is focused on learning and clarity: each rendering concept is implem
 | Sky gradient rendering | Complete |
 | Ray-sphere intersection | Complete |
 | Normal-based sphere shading | Complete |
-| Hittable abstraction / scene list | In progress |
+| `Hittable` abstraction | Complete |
+| `HittableList` scene container | Complete |
+| Plane intersection and shading | Complete |
+| Multiple-object scene render test | Complete |
 | Phong lighting, shadows, reflections | Planned |
 
 ## Build And Run
@@ -54,6 +57,7 @@ The executable starts an interactive test menu:
 9. Render Gradient Test (PPM)
 10. Render Sky Color From Camera Rays
 11. Render Sphere Intersection Test
+12. Render Multiple Objects Test
 0. Exit
 ```
 
@@ -61,6 +65,7 @@ Generated files:
 - Option `9` -> `output/test.ppm`
 - Option `10` -> `output/raytracer.ppm`
 - Option `11` -> `output/sphere.ppm`
+- Option `12` -> `output/multiple_objects.ppm`
 
 ## Project Layout
 
@@ -73,12 +78,14 @@ RayTracerCPU/
 │   ├── Ray.h
 │   ├── Image.h
 │   ├── Camera.h
+│   ├── Hittable.h
+│   ├── HittableList.h
 │   ├── Sphere.h
+│   ├── Plane.h
 │   ├── InputUtils.h
 │   ├── Menu.h
 │   ├── VectorTests.h
 │   ├── RenderTests.h
-│   ├── Hittable.h
 │   ├── Light.h
 │   └── Material.h
 ├── src/
@@ -97,13 +104,14 @@ RayTracerCPU/
 - `InputUtils`: shared terminal input/output helpers.
 - `Menu`: interactive menu rendering.
 - `VectorTests`: Vec3 operation handlers (options 1-8).
-- `RenderTests`: rendering handlers (options 9-11).
+- `RenderTests`: rendering handlers (options 9-12), including sphere, plane, and multi-object scene tests.
+- `HittableList`: scene container abstraction for multiple hittable objects.
 
 ## Core Math Notes
 
 - Ray equation: `P(t) = O + tD`, with `t >= 0`.
 - Sphere equation: `||P - C||^2 = r^2`.
-- Substituting ray into sphere yields a quadratic in `t`.
+- Substituting a ray into the sphere equation yields a quadratic in `t`.
 - The discriminant determines hit/no-hit and entry/exit intersections.
 
 ## Tech Stack

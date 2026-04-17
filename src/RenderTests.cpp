@@ -10,6 +10,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Hittable.h"
+#include "HittableList.h"
 #include "Menu.h"
 
 namespace {
@@ -141,7 +142,7 @@ void runMultipleObjectsRenderTest() {
     Camera camera(Vec3(0, 0, 0), float(2.0 * aspect_ratio), 2.0f, focal_length);
 
     int op = -1;
-    std::vector<std::unique_ptr<Hittable>> scene_objects;
+    HittableList scene_objects;
 
     while (op!=0) {
         printObjectsMenu();
@@ -163,7 +164,7 @@ void runMultipleObjectsRenderTest() {
                 if (radius <= 0.0f) {
                     radius = 0.5f;
                 }
-                scene_objects.push_back(std::make_unique<Sphere>(center, radius));
+                scene_objects.add(std::make_unique<Sphere>(center, radius));
                 break;
             }
             case 2: {
@@ -173,7 +174,7 @@ void runMultipleObjectsRenderTest() {
                 if (normal.length() == 0) {
                     normal = Vec3(0, 1, 0);
                 }
-                scene_objects.push_back(std::make_unique<Plane>(point, normal));
+                scene_objects.add(std::make_unique<Plane>(point, normal));
                 break;
             }
             case 0:
@@ -185,7 +186,7 @@ void runMultipleObjectsRenderTest() {
         }
     }
 
-    if (scene_objects.empty()) {
+    if (scene_objects.getObjects().empty()) {
         std::cout << "Scene is empty. Rendering sky only." << std::endl;
     }
 
@@ -200,24 +201,10 @@ void runMultipleObjectsRenderTest() {
             Vec3 color = rayColor(ray);
 
             double closest_so_far = std::numeric_limits<double>::infinity();
-            bool has_hit = false;
             Vec3 closest_hit_point;
             const Hittable* closest_object = nullptr;
 
-            for (const auto& obj : scene_objects) {
-                Vec3 hit_point;
-                if (obj->hit(ray, 0.001f, float(closest_so_far), hit_point)) {
-                    double distance = (hit_point - ray.origin).length();
-                    if (distance < closest_so_far) {
-                        closest_so_far = distance;
-                        closest_hit_point = hit_point;
-                        closest_object = obj.get();
-                        has_hit = true;
-                    }
-                }
-            }
-
-            if (has_hit && closest_object != nullptr) {
+            if (scene_objects.hit(ray, 0.001f, float(closest_so_far), closest_hit_point, closest_object) && closest_object != nullptr) {
                 color = objectRayColor(*closest_object, closest_hit_point);
             }
 
