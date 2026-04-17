@@ -2,5 +2,6 @@
 #define MENU_H
 
 void printMenu();
+void printObjectsMenu();
 
 #endif // MENU_H

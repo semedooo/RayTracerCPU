@@ -40,6 +40,10 @@ int main() {
                 runSphereIntersectionRenderTest();
                 break;
             }
+            case 12: {
+                runMultipleObjectsRenderTest();
+                break;
+            }
             case 0:
                 cout << "Goodbye!" << endl;
                 break;

@@ -4,5 +4,6 @@
 void runGradientRenderTest();
 void runSkyRenderTest();
 void runSphereIntersectionRenderTest();
+void runMultipleObjectsRenderTest();
 
 #endif // RENDER_TESTS_H

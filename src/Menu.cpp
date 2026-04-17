@@ -16,6 +16,15 @@ void printMenu() {
     std::cout << "9. Render Gradient Test (PPM)" << std::endl;
     std::cout << "10. Render Sky Color From Camera Rays" << std::endl;
     std::cout << "11. Render Sphere Intersection Test" << std::endl;
+    std::cout << "12. Render Multiple Objects Test" << std::endl;
     std::cout << "0. Exit" << std::endl;
     std::cout << "Choose option: ";
+}
+
+void printObjectsMenu() {
+    std::cout << "=== Multiple Objects Render Test ===" << std::endl;
+    std::cout << "Choose an object to add to the scene:" << std::endl;
+    std::cout << "1. Sphere" << std::endl;
+    std::cout << "2. Plane" << std::endl;
+    std::cout << "Press Enter when done." << std::endl;
 }
