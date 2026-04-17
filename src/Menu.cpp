@@ -26,5 +26,6 @@ void printObjectsMenu() {
     std::cout << "Choose an object to add to the scene:" << std::endl;
     std::cout << "1. Sphere" << std::endl;
     std::cout << "2. Plane" << std::endl;
-    std::cout << "Press Enter when done." << std::endl;
+    std::cout << "0. Finish and render" << std::endl;
+    std::cout << "Choose option: ";
 }

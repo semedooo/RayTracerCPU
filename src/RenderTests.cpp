@@ -1,11 +1,14 @@
 #include <iostream>
 #include <vector>
+#include <memory>
+#include <limits>
 #include "RenderTests.h"
 #include "InputUtils.h"
 #include "Image.h"
 #include "Camera.h"
 #include "Ray.h"
 #include "Sphere.h"
+#include "Plane.h"
 #include "Hittable.h"
 #include "Menu.h"
 
@@ -23,6 +26,20 @@ Vec3 sphereRayColor(const Ray& r, const Sphere& sphere) {
         return 0.5 * (normal + Vec3(1.0, 1.0, 1.0));
     }
     return rayColor(r);
+}
+
+Vec3 objectRayColor(const Hittable& obj, const Vec3& hit_point) {
+    if (const Sphere* sphere = dynamic_cast<const Sphere*>(&obj)) {
+        Vec3 normal = (hit_point - sphere->center).normalized();
+        return 0.5 * (normal + Vec3(1.0, 1.0, 1.0));
+    }
+
+    if (const Plane* plane = dynamic_cast<const Plane*>(&obj)) {
+        Vec3 normal = plane->normal.normalized();
+        return 0.5 * (normal + Vec3(1.0, 1.0, 1.0));
+    }
+
+    return Vec3(1.0, 0.0, 1.0);
 }
 
 Camera readCameraParameters() {
@@ -123,17 +140,19 @@ void runMultipleObjectsRenderTest() {
 
     Camera camera(Vec3(0, 0, 0), float(2.0 * aspect_ratio), 2.0f, focal_length);
 
-    int op;
-    op = -1;
-
-    vector<Hittable*> scene_objects;
+    int op = -1;
+    std::vector<std::unique_ptr<Hittable>> scene_objects;
 
     while (op!=0) {
         printObjectsMenu();
-        cin >> op;
+        std::cin >> op;
 
-        if (cin.fail()) {
-            cout << "Error: invalid input!" << endl;
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "Error: invalid input!" << std::endl;
+            op = -1;
+            continue;
         }
 
         switch (op) {
@@ -144,13 +163,17 @@ void runMultipleObjectsRenderTest() {
                 if (radius <= 0.0f) {
                     radius = 0.5f;
                 }
-                Sphere sphere(center, radius);
-                scene_objects.push_back(new Sphere(sphere));
+                scene_objects.push_back(std::make_unique<Sphere>(center, radius));
                 break;
             }
             case 2: {
                 std::cout << "Adding Plane to the scene..." << std::endl;
-                // Implement plane addition logic here
+                Vec3 point = readVec("Plane Point (x y z): ");
+                Vec3 normal = readVec("Plane Normal (x y z): ");
+                if (normal.length() == 0) {
+                    normal = Vec3(0, 1, 0);
+                }
+                scene_objects.push_back(std::make_unique<Plane>(point, normal));
                 break;
             }
             case 0:
@@ -162,6 +185,10 @@ void runMultipleObjectsRenderTest() {
         }
     }
 
+    if (scene_objects.empty()) {
+        std::cout << "Scene is empty. Rendering sky only." << std::endl;
+    }
+
     std::vector<Vec3> pixels(image_width * image_height);
 
     for (int j = 0; j < image_height; j++) {
@@ -170,14 +197,30 @@ void runMultipleObjectsRenderTest() {
             double v = double(image_height - 1 - j) / (image_height - 1);
 
             Ray ray = camera.getRay(float(u), float(v));
-            Vec3 color(0, 0, 0);
+            Vec3 color = rayColor(ray);
+
+            double closest_so_far = std::numeric_limits<double>::infinity();
+            bool has_hit = false;
+            Vec3 closest_hit_point;
+            const Hittable* closest_object = nullptr;
+
             for (const auto& obj : scene_objects) {
                 Vec3 hit_point;
-                if (obj->hit(ray, 0.001f, 1e30f, hit_point)) {
-                    color = Vec3(1, 0, 0); // Hit color (red)
-                    break;
+                if (obj->hit(ray, 0.001f, float(closest_so_far), hit_point)) {
+                    double distance = (hit_point - ray.origin).length();
+                    if (distance < closest_so_far) {
+                        closest_so_far = distance;
+                        closest_hit_point = hit_point;
+                        closest_object = obj.get();
+                        has_hit = true;
+                    }
                 }
             }
+
+            if (has_hit && closest_object != nullptr) {
+                color = objectRayColor(*closest_object, closest_hit_point);
+            }
+
             pixels[j * image_width + i] = color;
         }
     }
