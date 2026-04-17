@@ -16,6 +16,16 @@ public:
         this->z = z;
     }
 
+    double getX() const {
+        return x;
+    }
+    double getY() const {
+        return y;
+    }
+    double getZ() const {
+        return z;
+    }
+
     Vec3 operator+(const Vec3& other) const {
         Vec3 result;
         result.x = this->x + other.x;
@@ -53,6 +63,14 @@ public:
         result.x = this->x / other.x;
         result.y = this->y / other.y;
         result.z = this->z / other.z;
+        return result;
+    }
+
+    Vec3 operator/(double scalar) const {
+        Vec3 result;
+        result.x = this->x / scalar;
+        result.y = this->y / scalar;
+        result.z = this->z / scalar;
         return result;
     }
 

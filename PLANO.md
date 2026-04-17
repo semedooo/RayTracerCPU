@@ -23,7 +23,7 @@ Construir um ray tracer CPU em C++ puro, passo a passo, para aprender:
 
 ---
 
-### Etapa 1 — Classe `Vec3` (Álgebra Linear Fundamental)
+### Etapa 1 — Classe `Vec3` (Álgebra Linear Fundamental) ✅
 
 **Teoria:**
 - Vetor 3D: `(x, y, z)`
@@ -34,37 +34,37 @@ Construir um ray tracer CPU em C++ puro, passo a passo, para aprender:
 - Normalização: `v̂ = v / ||v||`
 
 **Tarefas:**
-- [ ] Criar `include/Vec3.h` com struct `Vec3`
-- [ ] Implementar operadores (`+`, `-`, `*`, `/`), `dot()`, `cross()`, `length()`, `normalized()`
-- [ ] Testar no `main.cpp` (ex: normalizar (3,4,0) → (0.6, 0.8, 0))
+- [x] Criar `include/Vec3.h` com struct `Vec3`
+- [x] Implementar operadores (`+`, `-`, `*`, `/`), `dot()`, `cross()`, `length()`, `normalized()`
+- [x] Testar no `main.cpp` (ex: normalizar (3,4,0) → (0.6, 0.8, 0))
 
 ---
 
-### Etapa 2 — Classe `Ray` (O Raio de Luz)
+### Etapa 2 — Classe `Ray` (O Raio de Luz) ✅
 
 **Teoria:**
 - Um raio: `P(t) = origin + t * direction`, onde `t ≥ 0`
 - `origin` = ponto de partida, `direction` = vetor normalizado
 
 **Tarefas:**
-- [ ] Criar `include/Ray.h` com `origin` e `direction`
-- [ ] Método `at(double t)` que retorna o ponto ao longo do raio
+- [x] Criar `include/Ray.h` com `origin` e `direction`
+- [x] Método `at(double t)` que retorna o ponto ao longo do raio
 
 ---
 
-### Etapa 3 — Gerar uma Imagem (Output PPM)
+### Etapa 3 — Gerar uma Imagem (Output PPM) ✅
 
 **Teoria:**
 - Formato PPM: cabeçalho `P3 width height 255`, depois RGB por pixel, linha a linha
 - É texto puro, abre em qualquer viewer de imagens
 
 **Tarefas:**
-- [ ] Criar função que escreve um ficheiro `.ppm` a partir de um buffer de cores
-- [ ] Gerar gradiente simples (azul→branco) — primeira imagem visível!
+- [x] Criar função que escreve um ficheiro `.ppm` a partir de um buffer de cores
+- [x] Gerar gradiente simples (azul→branco) — primeira imagem visível!
 
 ---
 
-### Etapa 4 — Câmara e Loop de Rendering
+### Etapa 4 — Câmara e Loop de Rendering ✅
 
 **Teoria:**
 - A câmara define um "viewport" (retângulo no espaço 3D)
@@ -72,13 +72,13 @@ Construir um ray tracer CPU em C++ puro, passo a passo, para aprender:
 - Função `ray_color(Ray)` retorna a cor para cada raio
 
 **Tarefas:**
-- [ ] Criar struct `Camera` com `origin`, `viewport_width`, `viewport_height`, `focal_length`
-- [ ] Loop duplo (linhas × colunas): lançar raio por pixel
-- [ ] `ray_color()` retorna gradiente do céu por agora
+- [x] Criar struct `Camera` com `origin`, `viewport_width`, `viewport_height`, `focal_length`
+- [x] Loop duplo (linhas × colunas): lançar raio por pixel
+- [x] `ray_color()` retorna gradiente do céu por agora
 
 ---
 
-### Etapa 5 — Interseção Raio–Esfera
+### Etapa 5 — Interseção Raio–Esfera ✅
 
 **Teoria:**
 - Substituir `P(t)` na equação da esfera `||P - C||² = r²`
@@ -89,10 +89,10 @@ Construir um ray tracer CPU em C++ puro, passo a passo, para aprender:
   - `Δ > 0` → 2 pontos (entra e sai)
 
 **Tarefas:**
-- [ ] Criar `include/Sphere.h` com `center`, `radius`
-- [ ] Implementar `hit(Ray, t_min, t_max) → HitRecord`
-- [ ] Colorir a esfera com base na normal (mapear n̂ → RGB)
-- [ ] Primeira esfera visível!
+- [x] Criar `include/Sphere.h` com `center`, `radius`
+- [x] Implementar `hit(Ray, t_min, t_max)` (com retorno booleano e ponto de hit)
+- [x] Colorir a esfera com base na normal (mapear n̂ → RGB)
+- [x] Primeira esfera visível!
 
 ---
 

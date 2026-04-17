@@ -31,8 +31,8 @@ The goal is to deeply understand the rendering pipeline by writing every piece o
 | `Image` — PPM output (`P3` format) | ✅ Done |
 | Gradient sky render | ✅ Done |
 | Interactive Vec3 test menu | ✅ Done |
-| `Camera` — viewport and ray generation per pixel | 🚧 In progress |
-| `Sphere` — ray–sphere intersection | 🚧 In progress |
+| `Camera` — viewport and ray generation per pixel | ✅ Done |
+| `Sphere` — ray–sphere intersection + normal shading | ✅ Done |
 | `Hittable` / `HittableList` — polymorphic scene objects | 🚧 In progress |
 | Phong shading (`Light`, `Material`) | 📋 Planned |
 | Shadow rays | 📋 Planned |
@@ -81,10 +81,14 @@ The program starts an interactive menu for testing vector operations and renderi
 7. Length (length)
 8. Normalize (normalized)
 9. Generate test PPM image
+10. Ray Color (rayColor)
+11. Sphere
 0. Exit
 ```
 
 Selecting **option 9** generates a gradient test image at `output/test.ppm`.
+Selecting **option 10** renders sky color per ray at `output/raytracer.ppm`.
+Selecting **option 11** renders a sphere intersection test with normal-based shading at `output/sphere.ppm`.
 
 ---
 
@@ -100,9 +104,9 @@ RayTracerCPU/
 │   ├── Point.h           # ✅ 3D point (P3)
 │   ├── Ray.h             # ✅ Ray: origin + t·direction
 │   ├── Image.h           # ✅ PPM image output
-│   ├── Camera.h          # 🚧 Viewport & ray generation
+│   ├── Camera.h          # ✅ Viewport & ray generation
 │   ├── Hittable.h        # 🚧 Abstract hittable interface
-│   ├── Sphere.h          # 🚧 Sphere geometry
+│   ├── Sphere.h          # ✅ Sphere geometry and ray hit test
 │   ├── Light.h           # 📋 Point light source
 │   └── Material.h        # 📋 Phong material properties
 ├── src/
