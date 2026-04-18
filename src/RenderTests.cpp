@@ -2,6 +2,8 @@
 #include <vector>
 #include <memory>
 #include <limits>
+#include <algorithm>
+#include <cmath>
 #include "RenderTests.h"
 #include "InputUtils.h"
 #include "Image.h"
@@ -11,36 +13,34 @@
 #include "Plane.h"
 #include "Hittable.h"
 #include "HittableList.h"
+#include "Light.h"
+#include "Material.h"
 #include "Menu.h"
 
 namespace {
+Light sceneLight(Vec3(5, 5, -2), Vec3(1, 1, 1));
+
 Vec3 rayColor(const Ray& r) {
     Vec3 unit_direction = r.direction.normalized();
     float t = 0.5f * (unit_direction.y + 1.0f);
     return (1.0f - t) * Vec3(1.0f, 1.0f, 1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
 }
 
-Vec3 sphereRayColor(const Ray& r, const Sphere& sphere) {
-    Vec3 hit_point;
-    if (sphere.hit(r, 0.001f, 1e30f, hit_point)) {
-        Vec3 normal = (hit_point - sphere.center).normalized();
-        return 0.5 * (normal + Vec3(1.0, 1.0, 1.0));
-    }
-    return rayColor(r);
-}
+// Simple Phong shading for a hit point
+Vec3 shadingRayColor(const Ray& ray, const HitRecord& record, const Light& light) {
+    Vec3 ambient = record.material.ambient * light.intensity;
 
-Vec3 objectRayColor(const Hittable& obj, const Vec3& hit_point) {
-    if (const Sphere* sphere = dynamic_cast<const Sphere*>(&obj)) {
-        Vec3 normal = (hit_point - sphere->center).normalized();
-        return 0.5 * (normal + Vec3(1.0, 1.0, 1.0));
-    }
+    Vec3 light_direction = (light.position - record.point).normalized();
+    Vec3 view_direction = (ray.origin - record.point).normalized();
+    Vec3 reflected_direction = (2.0f * record.normal.dot(light_direction) * record.normal - light_direction).normalized();
 
-    if (const Plane* plane = dynamic_cast<const Plane*>(&obj)) {
-        Vec3 normal = plane->normal.normalized();
-        return 0.5 * (normal + Vec3(1.0, 1.0, 1.0));
-    }
+    float diffuse_factor = std::max(0.0f, static_cast<float>(record.normal.dot(light_direction)));
+    float specular_factor = std::pow(std::max(0.0f, static_cast<float>(reflected_direction.dot(view_direction))), record.material.shininess);
 
-    return Vec3(1.0, 0.0, 1.0);
+    Vec3 diffuse = record.material.diffuse * diffuse_factor * light.intensity;
+    Vec3 specular = record.material.specular * specular_factor * light.intensity;
+
+    return ambient + diffuse + specular;
 }
 
 Camera readCameraParameters() {
@@ -120,7 +120,10 @@ void runSphereIntersectionRenderTest() {
             double v = double(image_height - 1 - j) / (image_height - 1);
 
             Ray ray = camera.getRay(float(u), float(v));
-            pixels[j * image_width + i] = sphereRayColor(ray, sphere);
+            HitRecord hit_record;
+            pixels[j * image_width + i] = sphere.hit(ray, 0.001f, 1e30f, hit_record)
+                ? shadingRayColor(ray, hit_record, sceneLight)
+                : rayColor(ray);
         }
     }
 
@@ -200,12 +203,11 @@ void runMultipleObjectsRenderTest() {
             Ray ray = camera.getRay(float(u), float(v));
             Vec3 color = rayColor(ray);
 
-            double closest_so_far = std::numeric_limits<double>::infinity();
-            Vec3 closest_hit_point;
+            HitRecord hit_record;
             const Hittable* closest_object = nullptr;
 
-            if (scene_objects.hit(ray, 0.001f, float(closest_so_far), closest_hit_point, closest_object) && closest_object != nullptr) {
-                color = objectRayColor(*closest_object, closest_hit_point);
+            if (scene_objects.hit(ray, 0.001f, std::numeric_limits<float>::infinity(), hit_record, closest_object) && closest_object != nullptr) {
+                color = shadingRayColor(ray, hit_record, sceneLight);
             }
 
             pixels[j * image_width + i] = color;

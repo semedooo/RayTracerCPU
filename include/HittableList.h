@@ -11,22 +11,22 @@ public:
         objects.push_back(std::move(object));
     }
 
-    bool hit(const Ray& r, float t_min, float t_max, Vec3& hit_point) const override {
+    bool hit(const Ray& r, float t_min, float t_max, HitRecord &record) const override {
         const Hittable* closest_object = nullptr;
-        return hit(r, t_min, t_max, hit_point, closest_object);
+        return hit(r, t_min, t_max, record, closest_object);
     }
 
-    bool hit(const Ray& r, float t_min, float t_max, Vec3& hit_point, const Hittable*& closest_object) const {
+    bool hit(const Ray& r, float t_min, float t_max, HitRecord &record, const Hittable*& closest_object) const {
         bool has_hit = false;
         float closest_so_far = t_max;
-        Vec3 current_hit_point;
+        HitRecord current_record;
         closest_object = nullptr;
 
         for (const auto& object : objects) {
-            if (object->hit(r, t_min, closest_so_far, current_hit_point)) {
+            if (object->hit(r, t_min, closest_so_far, current_record)) {
                 has_hit = true;
-                closest_so_far = (current_hit_point - r.origin).length();
-                hit_point = current_hit_point;
+                closest_so_far = current_record.t;
+                record = current_record;
                 closest_object = object.get();
             }
         }

@@ -25,7 +25,7 @@ public:
         return center;
     }
 
-    bool hit(const Ray& ray, float t_min, float t_max, Vec3& hit_point) const override {
+    bool hit(const Ray& ray, float t_min, float t_max, HitRecord &record) const override {
         Vec3 oc = ray.origin - center;
         double a = ray.direction.dot(ray.direction);
         double half_b = oc.dot(ray.direction);
@@ -45,7 +45,10 @@ public:
             }
         }
 
-        hit_point = ray.at(root);
+        record.point = ray.at(root);
+        record.normal = (record.point - center).normalized();
+        record.t = root;
+        record.material = Material(); // Default material, can be customized
         return true;
     }
 
