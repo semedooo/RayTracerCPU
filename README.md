@@ -2,7 +2,7 @@
 
 CPU ray tracer built from scratch in modern C++17, with no external runtime dependencies.
 
-The project is focused on clarity and incremental learning: each rendering concept is implemented step by step, from vector math to geometric intersection and shading.
+The project is focused on clarity and incremental learning: each rendering concept is implemented step by step, from geometry intersection to scene rendering and shading.
 
 ## Current Scope
 
@@ -18,8 +18,9 @@ The project is focused on clarity and incremental learning: each rendering conce
 | `Hittable` abstraction | Complete |
 | `HittableList` scene container | Complete |
 | Plane intersection and shading | Complete |
-| Multiple-object scene render test | Complete |
-| Phong lighting, shadows, reflections | Planned |
+| Preset scene rendering menu | Complete |
+| Phong base shading (ambient + diffuse + specular) | In progress |
+| Shadows, reflections | Planned |
 
 ## Build And Run
 
@@ -44,28 +45,20 @@ The executable starts an interactive test menu:
 
 ```text
 === RayTracerCPU - Interactive Tests ===
--- Vec3 Operations --
-1. Vector Add (+)
-2. Vector Subtract (-)
-3. Vector Multiply (component-wise)
-4. Vector Divide (component-wise)
-5. Dot Product
-6. Cross Product
-7. Vector Length
-8. Normalize Vector
--- Rendering --
-9. Render Gradient Test (PPM)
-10. Render Sky Color From Camera Rays
-11. Render Sphere Intersection Test
-12. Render Multiple Objects Test
+1. Render Centered Sphere
+2. Render Ground Plane
+3. Render Three Spheres
+4. Render Sphere and Plane
+5. Render Custom Scene
 0. Exit
 ```
 
 Generated files:
-- Option `9` -> `output/test.ppm`
-- Option `10` -> `output/raytracer.ppm`
-- Option `11` -> `output/sphere.ppm`
-- Option `12` -> `output/multiple_objects.ppm`
+- Option `1` -> `output/sphere_centered.ppm`
+- Option `2` -> `output/ground_plane.ppm`
+- Option `3` -> `output/three_spheres.ppm`
+- Option `4` -> `output/sphere_and_plane.ppm`
+- Option `5` -> `output/multiple_objects.ppm`
 
 ## Project Layout
 
@@ -103,9 +96,17 @@ RayTracerCPU/
 - `main.cpp`: program loop and option dispatch.
 - `InputUtils`: shared terminal input/output helpers.
 - `Menu`: interactive menu rendering.
-- `VectorTests`: Vec3 operation handlers (options 1-8).
-- `RenderTests`: rendering handlers (options 9-12), including sphere, plane, and multi-object scene tests.
+- `RenderTests`: render presets and custom scene setup.
 - `HittableList`: scene container abstraction for multiple hittable objects.
+- `VectorTests`: legacy vector helpers kept in repository, no longer exposed in the main menu.
+
+## Current Presets
+
+- Centered sphere: `Sphere((0, 0, -1), 0.5)`
+- Ground plane: `Plane((0, -0.6, 0), normal=(0, 1, 0))`
+- Three spheres: three different radii/depths for quick composition testing
+- Sphere + plane: simple "object on floor" baseline scene
+- Custom scene: interactive object placement and focal length input
 
 ## Core Math Notes
 
