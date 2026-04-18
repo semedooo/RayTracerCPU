@@ -4,6 +4,7 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include "RenderTests.h"
 #include "InputUtils.h"
 #include "Image.h"
@@ -19,6 +20,13 @@
 
 namespace {
 Light sceneLight(Vec3(5, 5, -2), Vec3(1, 1, 1));
+
+Camera makeDefaultCamera(float focal_length) {
+    int image_width = 400;
+    int image_height = 225;
+    double aspect_ratio = double(image_width) / image_height;
+    return Camera(Vec3(0, 0, 0), float(2.0 * aspect_ratio), 2.0f, focal_length);
+}
 
 Vec3 rayColor(const Ray& r) {
     Vec3 unit_direction = r.direction.normalized();
@@ -43,6 +51,52 @@ Vec3 shadingRayColor(const Ray& ray, const HitRecord& record, const Light& light
     return ambient + diffuse + specular;
 }
 
+void renderSingleObjectTest(const Hittable& object, const std::string& output_file, float focal_length = 1.0f) {
+    int image_width = 400;
+    int image_height = 225;
+    Camera camera = makeDefaultCamera(focal_length);
+    std::vector<Vec3> pixels(image_width * image_height);
+
+    for (int j = 0; j < image_height; j++) {
+        for (int i = 0; i < image_width; i++) {
+            double u = double(i) / (image_width - 1);
+            double v = double(image_height - 1 - j) / (image_height - 1);
+
+            Ray ray = camera.getRay(float(u), float(v));
+            HitRecord hit_record;
+            pixels[j * image_width + i] = object.hit(ray, 0.001f, 1e30f, hit_record)
+                ? shadingRayColor(ray, hit_record, sceneLight)
+                : rayColor(ray);
+        }
+    }
+
+    save_ppm(output_file, image_width, image_height, pixels);
+    std::cout << "Image saved to " << output_file << std::endl;
+}
+
+void renderSceneTest(const Hittable& scene, const std::string& output_file, float focal_length = 1.0f) {
+    int image_width = 400;
+    int image_height = 225;
+    Camera camera = makeDefaultCamera(focal_length);
+    std::vector<Vec3> pixels(image_width * image_height);
+
+    for (int j = 0; j < image_height; j++) {
+        for (int i = 0; i < image_width; i++) {
+            double u = double(i) / (image_width - 1);
+            double v = double(image_height - 1 - j) / (image_height - 1);
+
+            Ray ray = camera.getRay(float(u), float(v));
+            HitRecord hit_record;
+            pixels[j * image_width + i] = scene.hit(ray, 0.001f, 1e30f, hit_record)
+                ? shadingRayColor(ray, hit_record, sceneLight)
+                : rayColor(ray);
+        }
+    }
+
+    save_ppm(output_file, image_width, image_height, pixels);
+    std::cout << "Image saved to " << output_file << std::endl;
+}
+/*
 Camera readCameraParameters() {
     float width, height, focal_length;
     std::cout << "Enter viewport width: ";
@@ -53,96 +107,41 @@ Camera readCameraParameters() {
     std::cin >> focal_length;
 
     return Camera(Vec3(0, 0, 0), width, height, focal_length);
-}
+} */
 } // namespace
 
-void runGradientRenderTest() {
-    int width = 400;
-    int height = 225;
-    std::vector<Vec3> pixels(width * height);
-
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            double r = double(i) / (width - 1);
-            double g = double(height - 1 - j) / (height - 1);
-            double b = 0.25;
-            pixels[j * width + i] = Vec3(r, g, b);
-        }
-    }
-
-    save_ppm("output/test.ppm", width, height, pixels);
-    std::cout << "Image saved to output/test.ppm" << std::endl;
+void runCenteredSphereRenderTest() {
+    Sphere sphere(Vec3(0, 0, -1), 0.5f);
+    renderSingleObjectTest(sphere, "output/sphere_centered.ppm");
 }
 
-void runSkyRenderTest() {
-    Camera camera = readCameraParameters();
-    std::vector<Vec3> pixels(camera.viewport_width * camera.viewport_height);
-
-    for (int i = 0; i < camera.viewport_height; i++) {
-        for (int j = 0; j < camera.viewport_width; j++) {
-            float u = float(j) / (camera.viewport_width - 1);
-            float v = float(i) / (camera.viewport_height - 1);
-
-            Ray ray = camera.getRay(u, v);
-            Vec3 color = rayColor(ray);
-            pixels[i * camera.viewport_width + j] = color;
-        }
-    }
-
-    save_ppm("output/raytracer.ppm", camera.viewport_width, camera.viewport_height, pixels);
-    std::cout << "Image saved to output/raytracer.ppm" << std::endl;
+void runGroundPlaneRenderTest() {
+    Plane plane(Vec3(0, -0.6f, 0), Vec3(0, 1, 0));
+    renderSingleObjectTest(plane, "output/ground_plane.ppm");
 }
 
-void runSphereIntersectionRenderTest() {
-    int image_width = 400;
-    int image_height = 225;
-    double aspect_ratio = double(image_width) / image_height;
+void runThreeSpheresRenderTest() {
+    HittableList scene;
+    scene.add(std::make_unique<Sphere>(Vec3(-0.9f, -0.05f, -1.8f), 0.35f));
+    scene.add(std::make_unique<Sphere>(Vec3(0.0f, -0.15f, -1.2f), 0.55f));
+    scene.add(std::make_unique<Sphere>(Vec3(0.95f, 0.05f, -1.9f), 0.32f));
 
+    renderSceneTest(scene, "output/three_spheres.ppm");
+}
+
+void runSphereAndPlaneRenderTest() {
+    HittableList scene;
+    scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0)));
+    scene.add(std::make_unique<Sphere>(Vec3(0.0f, -0.05f, -1.1f), 0.45f));
+
+    renderSceneTest(scene, "output/sphere_and_plane.ppm");
+}
+
+void runCustomSceneRenderTest() {
     float focal_length = readFloat("Focal Length (ex: 0.5, 1.0, 2.0): ");
     if (focal_length <= 0.0f) {
         focal_length = 1.0f;
     }
-
-    Camera camera(Vec3(0, 0, 0), float(2.0 * aspect_ratio), 2.0f, focal_length);
-
-    Vec3 center = readVec("Sphere Center (x y z): ");
-    float radius = readFloat("Sphere Radius: ");
-    if (radius <= 0.0f) {
-        radius = 0.5f;
-    }
-
-    Sphere sphere(center, radius);
-    std::vector<Vec3> pixels(image_width * image_height);
-
-    for (int j = 0; j < image_height; j++) {
-        for (int i = 0; i < image_width; i++) {
-            double u = double(i) / (image_width - 1);
-            double v = double(image_height - 1 - j) / (image_height - 1);
-
-            Ray ray = camera.getRay(float(u), float(v));
-            HitRecord hit_record;
-            pixels[j * image_width + i] = sphere.hit(ray, 0.001f, 1e30f, hit_record)
-                ? shadingRayColor(ray, hit_record, sceneLight)
-                : rayColor(ray);
-        }
-    }
-
-    save_ppm("output/sphere.ppm", image_width, image_height, pixels);
-    std::cout << "Image saved to output/sphere.ppm" << std::endl;
-}
-
-void runMultipleObjectsRenderTest() {
-
-    int image_width = 400;
-    int image_height = 225;
-    double aspect_ratio = double(image_width) / image_height;
-
-    float focal_length = readFloat("Focal Length (ex: 0.5, 1.0, 2.0): ");
-    if (focal_length <= 0.0f) {
-        focal_length = 1.0f;
-    }
-
-    Camera camera(Vec3(0, 0, 0), float(2.0 * aspect_ratio), 2.0f, focal_length);
 
     int op = -1;
     HittableList scene_objects;
@@ -193,27 +192,6 @@ void runMultipleObjectsRenderTest() {
         std::cout << "Scene is empty. Rendering sky only." << std::endl;
     }
 
-    std::vector<Vec3> pixels(image_width * image_height);
-
-    for (int j = 0; j < image_height; j++) {
-        for (int i = 0; i < image_width; i++) {
-            double u = double(i) / (image_width - 1);
-            double v = double(image_height - 1 - j) / (image_height - 1);
-
-            Ray ray = camera.getRay(float(u), float(v));
-            Vec3 color = rayColor(ray);
-
-            HitRecord hit_record;
-            const Hittable* closest_object = nullptr;
-
-            if (scene_objects.hit(ray, 0.001f, std::numeric_limits<float>::infinity(), hit_record, closest_object) && closest_object != nullptr) {
-                color = shadingRayColor(ray, hit_record, sceneLight);
-            }
-
-            pixels[j * image_width + i] = color;
-        }
-    }
-    save_ppm("output/multiple_objects.ppm", image_width, image_height, pixels);
-    std::cout << "Image saved to output/multiple_objects.ppm" << std::endl;
+    renderSceneTest(scene_objects, "output/multiple_objects.ppm", focal_length);
 
 }
