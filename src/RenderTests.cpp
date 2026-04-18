@@ -17,6 +17,7 @@
 #include "Light.h"
 #include "Material.h"
 #include "Menu.h"
+#include "ShowPPM.h"
 
 namespace {
 Light sceneLight(Vec3(5, 5, -2), Vec3(1, 1, 1));
@@ -112,12 +113,16 @@ Camera readCameraParameters() {
 
 void runCenteredSphereRenderTest() {
     Sphere sphere(Vec3(0, 0, -1), 0.5f);
-    renderSingleObjectTest(sphere, "output/sphere_centered.ppm");
+    const char* outFile = "output/sphere_centered.ppm";
+    renderSingleObjectTest(sphere, outFile);
+    showPPMImage(outFile);
 }
 
 void runGroundPlaneRenderTest() {
     Plane plane(Vec3(0, -0.6f, 0), Vec3(0, 1, 0));
-    renderSingleObjectTest(plane, "output/ground_plane.ppm");
+    const char* outFile = "output/ground_plane.ppm";
+    renderSingleObjectTest(plane, outFile);
+    showPPMImage(outFile);
 }
 
 void runThreeSpheresRenderTest() {
@@ -125,16 +130,18 @@ void runThreeSpheresRenderTest() {
     scene.add(std::make_unique<Sphere>(Vec3(-0.9f, -0.05f, -1.8f), 0.35f));
     scene.add(std::make_unique<Sphere>(Vec3(0.0f, -0.15f, -1.2f), 0.55f));
     scene.add(std::make_unique<Sphere>(Vec3(0.95f, 0.05f, -1.9f), 0.32f));
-
-    renderSceneTest(scene, "output/three_spheres.ppm");
+    const char* outFile = "output/three_spheres.ppm";
+    renderSceneTest(scene, outFile);
+    showPPMImage(outFile);
 }
 
 void runSphereAndPlaneRenderTest() {
     HittableList scene;
     scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0)));
     scene.add(std::make_unique<Sphere>(Vec3(0.0f, -0.05f, -1.1f), 0.45f));
-
-    renderSceneTest(scene, "output/sphere_and_plane.ppm");
+    const char* outFile = "output/sphere_and_plane.ppm";
+    renderSceneTest(scene, outFile);
+    showPPMImage(outFile);
 }
 
 void runCustomSceneRenderTest() {
@@ -192,6 +199,8 @@ void runCustomSceneRenderTest() {
         std::cout << "Scene is empty. Rendering sky only." << std::endl;
     }
 
-    renderSceneTest(scene_objects, "output/multiple_objects.ppm", focal_length);
+    const char* outFile = "output/multiple_objects.ppm";
+    renderSceneTest(scene_objects, outFile, focal_length);
+    showPPMImage(outFile);
 
 }

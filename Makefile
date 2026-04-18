@@ -1,6 +1,6 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -O2 -Wall -Wextra
-INCLUDES = -Iinclude
+INCLUDES = -Iinclude -IC:/msys64/mingw64/include
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -11,8 +11,10 @@ OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
 all: $(BIN)
 
+SFML_LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+
 $(BIN): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(SFML_LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
