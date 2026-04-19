@@ -3,6 +3,8 @@ obj/
 *.o
 *.obj
 *.exe
+raytracer
+ppm_viewer
 
 # Render outputs (keep folder, ignore generated images)
 output/*.ppm

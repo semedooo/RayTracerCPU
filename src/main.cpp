@@ -1,21 +1,53 @@
 #include <iostream>
 #include <limits>
+#include <string>
 #include "Menu.h"
 #include "RenderTests.h"
 
 using namespace std;
 
+namespace {
+bool tryParseMenuOption(const std::string& text, int& value) {
+    if (text.empty()) {
+        return false;
+    }
+
+    size_t parsedChars = 0;
+    try {
+        int parsed = std::stoi(text, &parsedChars);
+        if (parsedChars != text.size()) {
+            return false;
+        }
+        value = parsed;
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+void discardPendingInputLines() {
+    std::cin.clear();
+    while (std::cin.rdbuf()->in_avail() > 0) {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+}
+}
+
 int main() {
-    int op;
-    op = -1;
+    int op = -1;
 
-    while (op!=0) {
+    while (op != 0) {
         printMenu();
-        cin >> op;
 
-        if (cin.fail()) {
-            cout << "Error: invalid input!" << endl;
+        std::string optionText;
+        if (!std::getline(std::cin, optionText)) {
+            std::cout << "Error: failed to read input!" << std::endl;
             return 1;
+        }
+
+        if (!tryParseMenuOption(optionText, op)) {
+            std::cout << "Error: invalid input!" << std::endl;
+            continue;
         }
 
         switch (op) {
@@ -46,10 +78,13 @@ int main() {
                 cout << "Error: invalid operation!" << endl;
                 break;
         }
+
         if (op != 0) {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            // Drop any keys typed while the SFML window was focused.
+            discardPendingInputLines();
             cout << "Press Enter to continue...";
-            cin.get();
+            std::string pauseLine;
+            std::getline(std::cin, pauseLine);
             cout << endl;
         }
     }
