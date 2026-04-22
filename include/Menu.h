@@ -2,6 +2,7 @@
 #define MENU_H
 
 void printMenu();
-void printObjectsMenu();
+void printLightMenu();
+void printAddObjectsMenu();
 
 #endif // MENU_H
