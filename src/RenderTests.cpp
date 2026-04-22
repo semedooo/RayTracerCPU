@@ -52,30 +52,7 @@ Vec3 shadingRayColor(const Ray& ray, const HitRecord& record, const Light& light
     return ambient + diffuse + specular;
 }
 
-void renderSingleObjectTest(const Hittable& object, const std::string& output_file, float focal_length = 1.0f) {
-    int image_width = 400;
-    int image_height = 225;
-    Camera camera = makeDefaultCamera(focal_length);
-    std::vector<Vec3> pixels(image_width * image_height);
-
-    for (int j = 0; j < image_height; j++) {
-        for (int i = 0; i < image_width; i++) {
-            double u = double(i) / (image_width - 1);
-            double v = double(image_height - 1 - j) / (image_height - 1);
-
-            Ray ray = camera.getRay(float(u), float(v));
-            HitRecord hit_record;
-            pixels[j * image_width + i] = object.hit(ray, 0.001f, 1e30f, hit_record)
-                ? shadingRayColor(ray, hit_record, sceneLight)
-                : rayColor(ray);
-        }
-    }
-
-    save_ppm(output_file, image_width, image_height, pixels);
-    std::cout << "Image saved to " << output_file << std::endl;
-}
-
-void renderSceneTest(const Hittable& scene, const std::string& output_file, float focal_length = 1.0f) {
+void renderObjectsTest(const Hittable& scene, const std::string& output_file, float focal_length = 1.0f) {
     int image_width = 400;
     int image_height = 225;
     Camera camera = makeDefaultCamera(focal_length);
@@ -102,14 +79,14 @@ void renderSceneTest(const Hittable& scene, const std::string& output_file, floa
 void runCenteredSphereRenderTest() {
     Sphere sphere(Vec3(0, 0, -1), 0.5f);
     const char* outFile = "output/sphere_centered.ppm";
-    renderSingleObjectTest(sphere, outFile);
+    renderObjectsTest(sphere, outFile);
     showPPMImage(outFile);
 }
 
 void runGroundPlaneRenderTest() {
     Plane plane(Vec3(0, -0.6f, 0), Vec3(0, 1, 0));
     const char* outFile = "output/ground_plane.ppm";
-    renderSingleObjectTest(plane, outFile);
+    renderObjectsTest(plane, outFile);
     showPPMImage(outFile);
 }
 
@@ -119,7 +96,7 @@ void runThreeSpheresRenderTest() {
     scene.add(std::make_unique<Sphere>(Vec3(0.0f, -0.15f, -1.2f), 0.55f));
     scene.add(std::make_unique<Sphere>(Vec3(0.95f, 0.05f, -1.9f), 0.32f));
     const char* outFile = "output/three_spheres.ppm";
-    renderSceneTest(scene, outFile);
+    renderObjectsTest(scene, outFile);
     showPPMImage(outFile);
 }
 
@@ -128,7 +105,7 @@ void runSphereAndPlaneRenderTest() {
     scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0)));
     scene.add(std::make_unique<Sphere>(Vec3(0.0f, -0.05f, -1.1f), 0.45f));
     const char* outFile = "output/sphere_and_plane.ppm";
-    renderSceneTest(scene, outFile);
+    renderObjectsTest(scene, outFile);
     showPPMImage(outFile);
 }
 
@@ -188,7 +165,7 @@ void runCustomSceneRenderTest() {
     }
 
     const char* outFile = "output/multiple_objects.ppm";
-    renderSceneTest(scene_objects, outFile, focal_length);
+    renderObjectsTest(scene_objects, outFile, focal_length);
     showPPMImage(outFile);
 
 }
