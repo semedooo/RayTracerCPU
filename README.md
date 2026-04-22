@@ -21,8 +21,10 @@ Current implementation includes an SFML-based viewer that automatically opens ge
 | `HittableList` scene container | Complete |
 | Plane intersection and shading | Complete |
 | Preset scene rendering menu | Complete |
-| Phong base shading (ambient + diffuse + specular) | In progress |
-| Shadows, reflections | Planned |
+| Phong shading (ambient + diffuse + specular) | Complete |
+| Hard shadows via shadow rays | Complete |
+| Interactive custom scene workflow (lights + objects) | Complete |
+| Reflections | Planned |
 
 ## Build And Run
 
@@ -72,6 +74,32 @@ Generated files:
 - Option `4` -> `output/sphere_and_plane.ppm`
 - Option `5` -> `output/multiple_objects.ppm`
 
+## Custom Scene Workflow
+
+Option `5` (Custom Scene) now follows this flow:
+
+1. Choose light preset:
+    - `1` Default
+    - `2` Top
+    - `3` Left
+    - `4` Right
+    - `5` Back
+2. Choose camera focal length.
+3. Add objects from one unified menu (repeat as needed, then render with `0`):
+    - `1` Left Sphere
+    - `2` Close Sphere
+    - `3` Right Sphere
+    - `4` Distant Sphere
+    - `5` Ground Plane
+    - `6` Inclined Plane
+    - `7` Background Plane
+    - `8` Left Vertical Plane
+    - `9` Add Sphere Manually
+    - `10` Add Plane Manually
+    - `0` Render Scene
+
+Each object addition prints a positive confirmation and current scene object count in the terminal.
+
 ## Project Layout
 
 ```text
@@ -119,7 +147,7 @@ RayTracerCPU/
 - Ground plane: `Plane((0, -0.6, 0), normal=(0, 1, 0))`
 - Three spheres: three different radii/depths for quick composition testing
 - Sphere + plane: simple "object on floor" baseline scene
-- Custom scene: interactive object placement and focal length input
+- Custom scene: interactive light selection, focal length input, and unified object-add menu
 
 ## Core Math Notes
 
@@ -134,6 +162,13 @@ RayTracerCPU/
 - Build: GNU Make + g++
 - Image format: PPM (`P3` and `P6` support in viewer)
 - Graphics/viewer: SFML (`graphics`, `window`, `system`)
+
+## Rendering Features Implemented
+
+- Sky gradient background.
+- Diffuse + specular Phong lighting with ambient term.
+- Shadow rays with epsilon bias to avoid self-shadowing acne.
+- Shadow behavior: when a point is occluded from the light, only ambient is kept.
 
 ## Author
 
