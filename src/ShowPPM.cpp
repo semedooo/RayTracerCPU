@@ -154,6 +154,12 @@ bool showPPMImage(const std::string& filename) {
     );
     const sf::Vector2u fixedSize(width, height);
 
+    // Center window on screen
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    int centerX = (desktop.width - static_cast<int>(width)) / 2;
+    int centerY = (desktop.height - static_cast<int>(height)) / 2;
+    window.setPosition(sf::Vector2i(centerX, centerY));
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {

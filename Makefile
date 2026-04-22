@@ -10,7 +10,7 @@ VIEWER_BIN = ppm_viewer
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
-all: $(BIN)
+all: $(BIN) $(VIEWER_BIN)
 
 UNAME_S := $(shell uname -s)
 
@@ -34,10 +34,10 @@ $(OBJ_DIR):
 run: $(BIN)
 	./$(BIN)
 
-viewer: PPMViewerCLI.cpp $(SRC_DIR)/ShowPPM.cpp include/ShowPPM.h
+$(VIEWER_BIN): PPMViewerCLI.cpp $(SRC_DIR)/ShowPPM.cpp include/ShowPPM.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(SFML_CFLAGS) -o $(VIEWER_BIN) PPMViewerCLI.cpp $(SRC_DIR)/ShowPPM.cpp $(SFML_LIBS)
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN) $(VIEWER_BIN)
 
-.PHONY: all run viewer clean
+.PHONY: all run clean

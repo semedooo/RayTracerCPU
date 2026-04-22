@@ -90,7 +90,6 @@ RayTracerCPU/
 │   ├── Plane.h
 │   ├── InputUtils.h
 │   ├── Menu.h
-│   ├── VectorTests.h
 │   ├── RenderTests.h
 │   ├── Light.h
 │   └── Material.h
@@ -99,7 +98,6 @@ RayTracerCPU/
 │   ├── InputUtils.cpp
 │   ├── Menu.cpp
 │   ├── ShowPPM.cpp
-│   ├── VectorTests.cpp
 │   └── RenderTests.cpp
 └── output/
     └── *.ppm
@@ -113,7 +111,6 @@ RayTracerCPU/
 - `RenderTests`: render presets and custom scene setup.
 - `ShowPPM`: robust PPM (`P3`/`P6`) loader and SFML viewer.
 - `HittableList`: scene container abstraction for multiple hittable objects.
-- `VectorTests`: legacy vector helpers kept in repository, no longer exposed in the main menu.
 - `PPMViewerCLI.cpp`: standalone CLI that reuses the same viewer implementation.
 
 ## Current Presets
@@ -168,7 +165,7 @@ g++ -std=c++17 -Iinclude PPMViewerCLI.cpp src/ShowPPM.cpp -o ppm_viewer -lsfml-g
 
 Example:
 ```sh
-./ppm_viewer output/raytracer.ppm
+./ppm_viewer output/sphere_centered.ppm
 ```
 
 Press ESC or close the window to exit.

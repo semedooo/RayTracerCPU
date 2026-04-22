@@ -97,19 +97,7 @@ void renderSceneTest(const Hittable& scene, const std::string& output_file, floa
     save_ppm(output_file, image_width, image_height, pixels);
     std::cout << "Image saved to " << output_file << std::endl;
 }
-/*
-Camera readCameraParameters() {
-    float width, height, focal_length;
-    std::cout << "Enter viewport width: ";
-    std::cin >> width;
-    std::cout << "Enter viewport height: ";
-    std::cin >> height;
-    std::cout << "Enter focal length: ";
-    std::cin >> focal_length;
-
-    return Camera(Vec3(0, 0, 0), width, height, focal_length);
-} */
-} // namespace
+}
 
 void runCenteredSphereRenderTest() {
     Sphere sphere(Vec3(0, 0, -1), 0.5f);
