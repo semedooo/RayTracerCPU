@@ -24,7 +24,7 @@ Current implementation includes an SFML-based viewer that automatically opens ge
 | Phong shading (ambient + diffuse + specular) | Complete |
 | Hard shadows via shadow rays | Complete |
 | Interactive custom scene workflow (lights + objects) | Complete |
-| Reflections | Planned |
+| Reflections (recursive with max_depth) | Complete |
 
 ## Build And Run
 
@@ -59,11 +59,19 @@ The executable starts an interactive test menu:
 
 ```text
 === RayTracerCPU - Interactive Tests ===
+
+--- Basic Presets (Non-Reflective) ---
 1. Render Centered Sphere
 2. Render Ground Plane
 3. Render Three Spheres
 4. Render Sphere and Plane
 5. Render Custom Scene
+
+--- Reflection Showcase ---
+6. Reflective Sphere (30%)
+7. Reflective Sphere (80%)
+8. Two Spheres Reflecting
+
 0. Exit
 ```
 
@@ -73,6 +81,9 @@ Generated files:
 - Option `3` -> `output/three_spheres.ppm`
 - Option `4` -> `output/sphere_and_plane.ppm`
 - Option `5` -> `output/multiple_objects.ppm`
+- Option `6` -> `output/reflective_sphere_lo.ppm`
+- Option `7` -> `output/reflective_sphere_med.ppm`
+- Option `8` -> `output/two_reflective_spheres.ppm`
 
 ## Custom Scene Workflow
 
@@ -143,11 +154,17 @@ RayTracerCPU/
 
 ## Current Presets
 
+**Basic (Non-Reflective):**
 - Centered sphere: `Sphere((0, 0, -1), 0.5)`
 - Ground plane: `Plane((0, -0.6, 0), normal=(0, 1, 0))`
 - Three spheres: three different radii/depths for quick composition testing
 - Sphere + plane: simple "object on floor" baseline scene
 - Custom scene: interactive light selection, focal length input, and unified object-add menu
+
+**Reflection Showcase:**
+- Reflective Sphere (30%): Single sphere with 30% reflectivity to show subtle reflections
+- Reflective Sphere (80%): Single sphere with 80% reflectivity to show high-mirror behavior
+- Two Spheres Reflecting: Two spheres with 50% reflectivity each, reflecting one another
 
 ## Core Math Notes
 
@@ -169,6 +186,9 @@ RayTracerCPU/
 - Diffuse + specular Phong lighting with ambient term.
 - Shadow rays with epsilon bias to avoid self-shadowing acne.
 - Shadow behavior: when a point is occluded from the light, only ambient is kept.
+- **Recursive reflections** with configurable reflectivity per material.
+- Reflection blending: `(1 - reflectivity) * local_color + reflectivity * reflected_color`.
+- Max depth limit (4 levels) to prevent excessive recursion and performance cost.
 
 ## Author
 
