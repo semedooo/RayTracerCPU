@@ -71,6 +71,18 @@ int main() {
                 runCustomSceneRenderTest();
                 break;
             }
+            case 6: {
+                runReflectiveSphereLoRenderTest();
+                break;
+            }
+            case 7: {
+                runReflectiveSphereMediumRenderTest();
+                break;
+            }
+            case 8: {
+                runTwoRefSphereRenderTest();
+                break;
+            }
             case 0:
                 cout << "Goodbye!" << endl;
                 break;

@@ -3,12 +3,17 @@
 
 void printMenu() {
     std::cout << "=== RayTracerCPU - Interactive Tests ===" << std::endl;
+    std::cout << "\n--- Basic Presets (Non-Reflective) ---" << std::endl;
     std::cout << "1. Render Centered Sphere" << std::endl;
     std::cout << "2. Render Ground Plane" << std::endl;
     std::cout << "3. Render Three Spheres" << std::endl;
     std::cout << "4. Render Sphere and Plane" << std::endl;
     std::cout << "5. Render Custom Scene" << std::endl;
-    std::cout << "0. Exit" << std::endl;
+    std::cout << "\n--- Reflection Showcase ---" << std::endl;
+    std::cout << "6. Reflective Sphere (30%)" << std::endl;
+    std::cout << "7. Reflective Sphere (80%)" << std::endl;
+    std::cout << "8. Two Spheres Reflecting" << std::endl;
+    std::cout << "\n0. Exit" << std::endl;
     std::cout << "Choose option: ";
 }
 

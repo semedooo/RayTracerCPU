@@ -12,10 +12,12 @@ class Sphere : public Hittable {
 public:
     Vec3 center;
     float radius;
+    Material material;
 
-    Sphere() : center(0, 0, 0), radius(1.0f) {}
+    Sphere() : center(0, 0, 0), radius(1.0f), material() {}
 
-    Sphere(const Vec3& center, float radius) : center(center), radius(radius) {}
+    Sphere(const Vec3& center, float radius, const Material& material = Material())
+        : center(center), radius(radius), material(material) {}
 
     float getRadius() const {
         return radius;
@@ -48,7 +50,7 @@ public:
         record.point = ray.at(root);
         record.normal = (record.point - center).normalized();
         record.t = root;
-        record.material = Material(); // Default material, can be customized
+        record.material = material;
         return true;
     }
 

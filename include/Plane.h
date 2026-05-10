@@ -8,9 +8,11 @@ class Plane : public Hittable {
 public:
     Vec3 point; // A point on the plane
     Vec3 normal; // Normal vector of the plane
+    Material material;
 
-    Plane() : point(0, 0, 0), normal(0, 1, 0) {}
-    Plane(const Vec3& point, const Vec3& normal) : point(point), normal(normal.normalized()) {}
+    Plane() : point(0, 0, 0), normal(0, 1, 0), material() {}
+    Plane(const Vec3& point, const Vec3& normal, const Material& material = Material())
+        : point(point), normal(normal.normalized()), material(material) {}
 
     bool hit(const Ray& ray, float t_min, float t_max, HitRecord &record) const override {
         float denom = normal.dot(ray.direction);
@@ -20,7 +22,7 @@ public:
                 record.point = ray.at(t);
                 record.normal = normal;
                 record.t = t;
-                record.material = Material(); // Default material, can be customized
+                record.material = material;
                 return true;
             }
         }

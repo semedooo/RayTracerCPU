@@ -55,6 +55,10 @@ bool isInShadow(const Hittable& scene, const HitRecord& record, const Light& lig
     return scene.hit(shadow_ray, 0.01f, distance_to_light, hit_record);
 }
 
+Vec3 reflect(const Vec3& incident, const Vec3& normal) {
+    return incident - 2.0 * incident.dot(normal) * normal;
+}
+
 Vec3 rayColor(const Ray& r) {
     Vec3 unit_direction = r.direction.normalized();
     float t = 0.5f * (unit_direction.y + 1.0f);
@@ -85,9 +89,35 @@ Vec3 shadingRayColor(const Ray& ray, const Hittable &scene, const HitRecord& rec
     return ambient + diffuse + specular;
 }
 
+Vec3 traceRay(const Ray& ray, const Hittable& scene, const Light& light, int depth) {
+    if (depth <= 0) {
+        return Vec3(0, 0, 0);
+    }
+
+    HitRecord hit_record;
+    if (!scene.hit(ray, 0.001f, 1e30f, hit_record)) {
+        return rayColor(ray);
+    }
+
+    Vec3 local_color = shadingRayColor(ray, scene, hit_record, light);
+    float reflectivity = std::clamp(hit_record.material.reflectivity, 0.0f, 1.0f);
+
+    if (reflectivity <= 0.0f) {
+        return local_color;
+    }
+
+    Vec3 reflected_direction = reflect(ray.direction.normalized(), hit_record.normal).normalized();
+    Vec3 reflected_origin = hit_record.point + hit_record.normal * 0.001f;
+    Ray reflected_ray(reflected_origin, 1.0, reflected_direction);
+    Vec3 reflected_color = traceRay(reflected_ray, scene, light, depth - 1);
+
+    return (1.0f - reflectivity) * local_color + reflectivity * reflected_color;
+}
+
 void renderObjectsTest(const Hittable& scene, const std::string& output_file, float focal_length = 1.0f, const Light& light = Light()) {
     int image_width = 400;
     int image_height = 225;
+    constexpr int max_depth = 4;
     Camera camera = makeDefaultCamera(focal_length);
     std::vector<Vec3> pixels(image_width * image_height);
 
@@ -97,10 +127,7 @@ void renderObjectsTest(const Hittable& scene, const std::string& output_file, fl
             double v = double(image_height - 1 - j) / (image_height - 1);
 
             Ray ray = camera.getRay(float(u), float(v));
-            HitRecord hit_record;
-            pixels[j * image_width + i] = scene.hit(ray, 0.001f, 1e30f, hit_record)
-                ? shadingRayColor(ray, scene, hit_record, light)
-                : rayColor(ray);
+            pixels[j * image_width + i] = traceRay(ray, scene, light, max_depth);
         }
     }
 
@@ -134,10 +161,51 @@ void runThreeSpheresRenderTest() {
 }
 
 void runSphereAndPlaneRenderTest() {
+    Material matte_ground(0.12f, 0.75f, 0.08f, 8.0f, 0.1f);
+    Material matte_sphere(0.1f, 0.7f, 0.2f, 32.0f, 0.0f);
+
     HittableList scene;
-    scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0)));
-    scene.add(std::make_unique<Sphere>(Vec3(0.0f, 0.3f, -1.1f), 0.45f));
+    scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0), matte_ground));
+    scene.add(std::make_unique<Sphere>(Vec3(0.0f, 0.3f, -1.1f), 0.45f, matte_sphere));
     const char* outFile = "output/sphere_and_plane.ppm";
+    renderObjectsTest(scene, outFile);
+    showPPMImage(outFile);
+}
+
+void runReflectiveSphereLoRenderTest() {
+    Material matte_ground(0.12f, 0.75f, 0.08f, 8.0f, 0.0f);
+    Material reflective_sphere(0.08f, 0.4f, 0.6f, 64.0f, 0.3f);
+
+    HittableList scene;
+    scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0), matte_ground));
+    scene.add(std::make_unique<Sphere>(Vec3(0.0f, 0.3f, -1.1f), 0.45f, reflective_sphere));
+    const char* outFile = "output/reflective_sphere_lo.ppm";
+    renderObjectsTest(scene, outFile);
+    showPPMImage(outFile);
+}
+
+void runReflectiveSphereMediumRenderTest() {
+    Material matte_ground(0.12f, 0.75f, 0.08f, 8.0f, 0.0f);
+    Material reflective_sphere(0.05f, 0.25f, 0.85f, 128.0f, 0.8f);
+
+    HittableList scene;
+    scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0), matte_ground));
+    scene.add(std::make_unique<Sphere>(Vec3(0.0f, 0.3f, -1.1f), 0.45f, reflective_sphere));
+    const char* outFile = "output/reflective_sphere_med.ppm";
+    renderObjectsTest(scene, outFile);
+    showPPMImage(outFile);
+}
+
+void runTwoRefSphereRenderTest() {
+    Material matte_ground(0.12f, 0.75f, 0.08f, 8.0f, 0.0f);
+    Material reflective_sphere_1(0.06f, 0.3f, 0.7f, 96.0f, 0.5f);
+    Material reflective_sphere_2(0.06f, 0.3f, 0.7f, 96.0f, 0.5f);
+
+    HittableList scene;
+    scene.add(std::make_unique<Plane>(Vec3(0, -0.6f, 0), Vec3(0, 1, 0), matte_ground));
+    scene.add(std::make_unique<Sphere>(Vec3(-0.4f, 0.25f, -1.0f), 0.35f, reflective_sphere_1));
+    scene.add(std::make_unique<Sphere>(Vec3(0.4f, 0.25f, -1.2f), 0.35f, reflective_sphere_2));
+    const char* outFile = "output/two_reflective_spheres.ppm";
     renderObjectsTest(scene, outFile);
     showPPMImage(outFile);
 }
